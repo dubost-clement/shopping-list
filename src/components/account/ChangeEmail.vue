@@ -10,9 +10,9 @@
         <input
           v-model="email"
           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="email"
           type="email"
           placeholder="Nouvelle adresse email"
+          required
         />
       </div>
       <div class="flex items-center justify-between">
@@ -40,21 +40,50 @@ export default {
   },
 
   methods: {
-    submitForm() {
+    async submitForm() {
+      //Récupération de l'utilisateur courant
       const user = firebase.auth().currentUser;
-      user
-        .updateEmail(this.email)
-        .then(() => {
-          Swal.fire({
-            title: "Votre adresse email a été changé avec succès",
-            icon: "success",
-            timer: 2000
+
+      //Demande de confirmation avec le mot de passe
+      const { value: password } = await Swal.fire({
+        title: "Mot de passe",
+        input: "password",
+        inputPlaceholder: "Entrer votre mot de passe",
+        inputAttributes: {
+          autocapitalize: "off",
+          autocorrect: "off"
+        }
+      });
+
+      //Si un password a été rentré
+      if (password) {
+        const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          password
+        );
+
+        try {
+          await user.reauthenticateWithCredential(credential);
+          user.updateEmail(this.email).then(() => {
+            Swal.fire({
+              title: "Votre adresse email a été changé avec succès",
+              icon: "success",
+              timer: 2000
+            });
+
+            this.email = "";
           });
-        })
-        .catch(error => {
-          //Voir pour reconnecter l'utilisateur afin de changer l'email
-          console.log(error);
-        });
+        } catch (error) {
+          //Mauvais mot de passe
+          if (error.code === "auth/wrong-password") {
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Le mot de passe que vous avez entré est incorrect"
+            });
+          }
+        }
+      }
     }
   }
 };

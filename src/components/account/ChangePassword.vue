@@ -6,16 +6,6 @@
     >
       <h2 class="text-center mb-8">Changer mon mot de passe</h2>
       <div class="mb-6">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="username">Mot de passe actuel</label>
-        <input
-          v-model="actualPassword"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="actualPassword"
-          type="password"
-          placeholder="Mot de passe"
-        />
-      </div>
-      <div class="mb-6">
         <label
           class="block text-gray-700 text-sm font-bold mb-2"
           for="username"
@@ -23,9 +13,9 @@
         <input
           v-model="newPassword"
           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="password"
           type="password"
           placeholder="Mot de passe"
+          required
         />
       </div>
       <div class="mb-6">
@@ -36,9 +26,9 @@
         <input
           v-model="repeatPassword"
           class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-          id="repeatPassword"
           type="password"
           placeholder="Mot de passe"
+          required
         />
         <p class="text-red-500 text-xs italic">Please choose a password.</p>
       </div>
@@ -61,7 +51,6 @@ export default {
 
   data: () => {
     return {
-      actualPassword: "",
       newPassword: "",
       repeatPassword: "",
       error: null
@@ -69,29 +58,54 @@ export default {
   },
 
   methods: {
-    submitForm() {
+    async submitForm() {
+      //Récupération de l'utilisateur courant
       const user = firebase.auth().currentUser;
-      if (this.newPassword === this.repeatPassword) {
-        console.log(user);
-        user
-          .updatePassword(this.newPassword)
-          .then(() => {
-            Swal.fire({
-              title: "Votre mot de passe a été changé avec succès",
-              icon: "success",
-              timer: 2000
+
+      //Demande de confirmation avec le mot de passe
+      const { value: password } = await Swal.fire({
+        title: "Mot de passe actuel",
+        input: "password",
+        inputPlaceholder: "Entrer votre mot de passe actuel",
+        inputAttributes: {
+          autocapitalize: "off",
+          autocorrect: "off"
+        }
+      });
+
+      //Si un password a été rentré
+      if (password) {
+        if (this.newPassword === this.repeatPassword) {
+          const credential = firebase.auth.EmailAuthProvider.credential(
+            user.email,
+            password
+          );
+
+          try {
+            await user.reauthenticateWithCredential(credential);
+            user.updatePassword(this.newPassword).then(() => {
+              Swal.fire({
+                title: "Votre mot de passe a été changé avec succès",
+                icon: "success",
+                timer: 2000
+              });
+
+              this.actualPassword = "";
+              this.newPassword = "";
+              this.repeatPassword = "";
             });
-          })
-          .catch(error => {
-            if (error.code === "auth/requires-recent-login") {
-              //Voir pour reconnecter l'utilisateur afin de changer le mot de passe
-              console.log("besoin de se reco");
+          } catch (error) {
+            //Mauvais mot de passe
+            if (error.code === "auth/wrong-password") {
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Le mot de passe que vous avez entré est incorrect"
+              });
             }
             console.log(error);
-          });
-      } else {
-        this.error = "Les mots de passe doivent être identique";
-        console.log(this.error);
+          }
+        }
       }
     }
   }
