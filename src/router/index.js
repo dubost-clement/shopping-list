@@ -12,7 +12,7 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: Home
   },
 
   {
@@ -21,13 +21,13 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ "../views/Login.vue"),
+    component: () => import(/* webpackChunkName: "about" */ "../views/Login.vue")
   },
 
   {
     path: "/inscription",
     name: "Register",
-    component: Register,
+    component: Register
   },
 
   {
@@ -35,8 +35,8 @@ const routes = [
     name: "Dashboard",
     component: Dashboard,
     meta: {
-      requiresAuth: true,
-    },
+      requiresAuth: true
+    }
   },
 
   {
@@ -44,9 +44,9 @@ const routes = [
     name: "Account",
     component: Account,
     meta: {
-      requiresAuth: true,
-    },
-  },
+      requiresAuth: true
+    }
+  }
 ];
 
 const router = new VueRouter({
@@ -55,7 +55,7 @@ const router = new VueRouter({
   routes,
   scrollBehavior() {
     return { x: 0, y: 0 };
-  },
+  }
 });
 
 router.beforeEach(async (to, from, next) => {

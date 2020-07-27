@@ -1,5 +1,10 @@
 @tailwind base;
 
+html,
+body {
+  background-color: #e2e8f0;
+}
+
 @tailwind components;
 
 @tailwind utilities;

@@ -33,12 +33,16 @@
             class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
           >S'inscrire</router-link>
         </div>
+        <button @click="sendResetPassword" type="button">mot de passe oublié ?</button>
       </form>
     </div>
   </div>
 </template>
 
 <script>
+import firebase from "../../configs/firebase";
+import Swal from "sweetalert2";
+
 export default {
   name: "LoginForm",
 
@@ -54,6 +58,41 @@ export default {
   methods: {
     submitForm() {
       this.$store.dispatch("logIn", this.userCredentials);
+    },
+
+    async sendResetPassword() {
+      const { value: email } = await Swal.fire({
+        title: "Rénitialiser mon mot de passe",
+        input: "email",
+        inputPlaceholder: "Entrer votre adresse email",
+        inputAttributes: {
+          autocapitalize: "off",
+          autocorrect: "off"
+        }
+      });
+
+      //Si un email a été rentré
+      if (email) {
+        try {
+          await firebase.auth().sendPasswordResetEmail(email);
+
+          Swal.fire({
+            title: `Un email pour rénitialiser votre mot de passe a été envoyé à ${email}`,
+            icon: "success",
+            timer: 2000
+          });
+        } catch (error) {
+          //Mauvaise adresse email
+          console.log(error);
+          if (error.code === "auth/user-not-found") {
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Aucun utilisateur ne correspond à cette adresse email"
+            });
+          }
+        }
+      }
     }
   }
 };

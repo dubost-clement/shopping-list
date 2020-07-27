@@ -1,15 +1,12 @@
 <template>
-  <nav
-    class="fixed w-full flex flex-wrap items-center justify-between px-2 py-3 navbar-expand-lg bg-blue-500 mb-3"
-  >
+  <nav class="fixed w-full flex flex-wrap items-center justify-between px-2 py-3 navbar-expand-lg bg-blue-500 mb-3">
     <div class="container px-4 mx-auto flex flex-wrap items-center justify-between">
-      <div
-        class="w-full relative flex justify-between lg:w-auto px-4 lg:static lg:block lg:justify-start"
-      >
+      <div class="w-full relative flex justify-between lg:w-auto px-4 lg:static lg:block lg:justify-start">
         <router-link
           to="/"
           class="text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-no-wrap uppercase text-white"
-        >Shopping list</router-link>
+          >Shopping list</router-link
+        >
         <button
           class="text-white cursor-pointer text-xl leading-none px-3 py-1 border border-solid border-transparent rounded bg-transparent block lg:hidden outline-none focus:outline-none"
           type="button"
@@ -18,18 +15,24 @@
           <font-awesome-icon icon="bars" />
         </button>
       </div>
-      <div
-        v-bind:class="{ hidden: !showMenu, flex: showMenu }"
-        class="lg:flex lg:flex-grow items-center"
-      >
+      <div v-bind:class="{ hidden: !showMenu, flex: showMenu }" class="lg:flex lg:flex-grow items-center">
         <ul class="flex flex-col lg:flex-row list-none ml-auto">
           <li class="nav-item">
             <router-link
+              v-if="showAccountLink"
               to="/mon-compte"
               class="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-white hover:opacity-75"
             >
               <span class="mr-1">Mon compte</span>
               <font-awesome-icon icon="user-circle" />
+            </router-link>
+            <router-link
+              v-else
+              to="/dashboard"
+              class="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-white hover:opacity-75"
+            >
+              <span class="mr-1">Mon panier</span>
+              <font-awesome-icon icon="shopping-cart" />
             </router-link>
           </li>
           <li class="nav-item">
@@ -54,8 +57,13 @@ export default {
 
   data: () => {
     return {
-      showMenu: false
+      showMenu: false,
+      showAccountLink: true
     };
+  },
+
+  created() {
+    this.$route.path === "/dashboard" ? (this.showAccountLink = true) : (this.showAccountLink = false);
   },
 
   methods: {

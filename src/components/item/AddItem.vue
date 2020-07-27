@@ -1,12 +1,9 @@
 <template>
   <form @submit.prevent="submitForm" class="w-full max-w-5xl mt-12">
-    <h1 class="text-center my-10">Ajouter vos produits</h1>
+    <h1 class="text-center my-10 text-4xl">Ajouter vos produits</h1>
     <div class="flex flex-wrap -mx-3 mb-6">
       <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-        <label
-          class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-          for="product"
-        >Produit</label>
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="product">Produit</label>
         <input
           v-model="product.name"
           value="{this.state.product}"
@@ -18,10 +15,9 @@
         />
       </div>
       <div class="w-full md:w-1/3 px-3">
-        <label
-          class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-          for="quantity"
-        >quantité</label>
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="quantity"
+          >quantité</label
+        >
         <input
           v-model="product.quantity"
           type="number"
@@ -33,10 +29,9 @@
 
       <div class="w-full md:w-1/3 px-3">
         <div class="flex justify-end items-center h-full py-3 px-4 mb-3">
-          <button
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            type="submit"
-          >Ajouter</button>
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">
+            Ajouter
+          </button>
         </div>
       </div>
     </div>
